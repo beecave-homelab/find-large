@@ -16,8 +16,8 @@ from .core import find_large_videos, VIDEO_EXTENSIONS
 def get_program_name():
     """Get the program name to display in help."""
     if sys.argv[0].endswith('__main__.py'):
-        return 'find-large-vids'
-    return os.path.basename(sys.argv[0])
+        return 'find-large vids'
+    return 'find-large-vids'
 
 def show_help(prog_name):
     """Display help message."""
