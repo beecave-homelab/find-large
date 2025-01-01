@@ -10,7 +10,8 @@ console = Console()
 # Color and style definitions
 STYLES = {
     'ascii_art': 'bold cyan',
-    'command_name': 'bold blue',
+    'active_command': 'bold blue',
+    'inactive_command': 'dim',
     'error': 'bold red',
     'success': 'bold green',
     'warning': 'bold yellow',
@@ -25,24 +26,24 @@ ASCII_ART = """
 ╠╣ ║║║║ ║║  ║  ╠═╣╠╦╝║ ╦║╣ 
 ╚  ╩╝╚╝═╩╝  ╩═╝╩ ╩╩╚═╚═╝╚═╝"""
 
-COMMAND_NAMES = {
-    "files": "FILES",
-    "dirs": "DIRS",
-    "vids": "VIDS"
-}
-
 def print_ascii_art(script_type="files"):
     """Print ASCII art banner based on script type."""
     # Print the common ASCII art
     console.print(ASCII_ART, style=STYLES['ascii_art'])
     
-    # Get the command name and center it
-    command_name = COMMAND_NAMES[script_type]
-    # The ASCII art is 32 characters wide
-    padding = " " * ((32 - len(command_name)) // 2)
+    # Format each command based on whether it's the current one
+    commands = ["FILES", "DIRS", "VIDS"]
+    formatted_commands = []
     
-    # Print the centered command name
-    console.print(f"{padding}[{STYLES['command_name']}]{command_name}[/{STYLES['command_name']}]")
+    for cmd in commands:
+        if cmd.lower() == script_type.upper():
+            formatted_commands.append(f"[{STYLES['active_command']}]{cmd}[/{STYLES['active_command']}]")
+        else:
+            formatted_commands.append(f"[{STYLES['inactive_command']}]{cmd}[/{STYLES['inactive_command']}]")
+    
+    # Join with separator and print
+    command_line = " | ".join(formatted_commands)
+    console.print(f"    {command_line}\n")
 
 def print_error(message):
     """Print an error message."""
