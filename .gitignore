@@ -1,0 +1,52 @@
+# Ignore everything by default
+*
+!*/
+
+# Allow specific file types and directories
+!.gitignore
+!LICENSE
+!README.md
+!setup.py
+!requirements.txt
+!pyproject.toml
+
+# Allow Python package files
+!find_large/**/*.py
+
+# Allow documentation
+!docs/**/*.md
+!docs/**/*.rst
+
+# Allow tests
+!tests/**/*.py
+
+# Still ignore these even if they match above rules
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/*.so
+**/.Python
+**/build/
+**/develop-eggs/
+**/dist/
+**/downloads/
+**/eggs/
+**/.eggs/
+**/lib/
+**/lib64/
+**/parts/
+**/sdist/
+**/var/
+**/wheels/
+**/*.egg-info/
+**/.installed.cfg
+**/*.egg
+**/MANIFEST
+**/.env
+**/.venv
+**/env/
+**/venv/
+**/ENV/
+**/.idea/
+**/.vscode/
+**/.DS_Store
