@@ -16,8 +16,8 @@ from .core import find_large_dirs
 def get_program_name():
     """Get the program name to display in help."""
     if sys.argv[0].endswith('__main__.py'):
-        return 'find-large-dirs'
-    return os.path.basename(sys.argv[0])
+        return 'find-large dirs'
+    return 'find-large-dirs'
 
 def show_help(prog_name):
     """Display help message."""
