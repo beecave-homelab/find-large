@@ -1,8 +1,7 @@
 """Command-line interface for finding large files."""
 
 import os
-import sys
-import argparse
+import click
 from .. import formatting
 from ..constants import (
     DEFAULT_DIR,
@@ -13,128 +12,64 @@ from ..constants import (
 )
 from .core import find_files
 
-def get_program_name():
-    """Get the program name to display in help."""
-    if sys.argv[0].endswith('__main__.py'):
-        return 'find-large files'
-    return 'find-large-files'
-
-def show_help(prog_name):
-    """Display help message."""
-    # Show ASCII art banner first
-    formatting.print_ascii_art("files")
+@click.command()
+@click.option('-d', '--directory', 'directory',
+              type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
+              default=DEFAULT_DIR,
+              help='Directory to search (default: current directory)')
+@click.option('-S', '--size-in-gb', 'size_gb',
+              type=float,
+              help=f'Size threshold in GB (default: {DEFAULT_SIZE_GB}GB)')
+@click.option('-s', '--size-in-mb', 'size_mb',
+              type=float,
+              help=f'Size threshold in MB (default: {DEFAULT_SIZE_MB}MB)')
+@click.option('-o', '--output', 'output_file',
+              type=click.Path(dir_okay=False, writable=True),
+              help='Save results to specified file')
+@click.option('-n', '--no-size',
+              is_flag=True,
+              help='Display files without their sizes')
+@click.option('-nt', '--no-table',
+              is_flag=True,
+              help='Output in plain text format (one file per line)')
+@click.option('-v', '--verbose',
+              is_flag=True,
+              help='Enable verbose output showing search progress')
+def main(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
+    """Find large files in a directory.
     
-    help_message = f"""
-Usage: {prog_name} [OPTIONS]
+    Examples:
+        find-large files -d /path/to/search -S 1
+        find-large files -d /path/to/search -s 500 -o results.txt
+        find-large files -d /path/to/search -s 500 -n -nt -v
+    """
+    if size_gb is not None and size_mb is not None:
+        formatting.print_error("You cannot use both --size-in-gb and --size-in-mb at the same time.")
+        raise click.Abort()
 
-Options:
-  File Search Options:
-    -d,  --directory DIRECTORY    Directory to search (default: current directory)
-    -S,  --size-in-gb SIZE        Size threshold in GB (default: {DEFAULT_SIZE_GB}GB)
-    -s,  --size-in-mb SIZE        Size threshold in MB (default: {DEFAULT_SIZE_MB}MB)
+    if size_gb is not None:
+        size_mb = size_gb * 1024
+        size_unit = SIZE_UNIT_GB
+    elif size_mb is not None:
+        size_unit = SIZE_UNIT_MB
+    else:
+        size_mb = DEFAULT_SIZE_GB * 1024
+        size_unit = SIZE_UNIT_GB
 
-  Output Options:
-    -o,  --output FILE            Save results to specified file
-    -n,  --no-size                Display files without their sizes
-    -nt, --no-table               Output in plain text format (one file per line)
-    -v,  --verbose                Enable verbose output showing search progress
+    if not os.path.isdir(directory):
+        formatting.print_error(f"Directory '{directory}' does not exist or is not accessible.")
+        raise click.Abort()
 
-  Help:
-    -h,  --help                   Show this help message
-
-Examples:
-  Search for files larger than 5GB and save results:
-    {prog_name} -d /path/to/search -S 5 -o results.txt
-
-  Search for files larger than 300MB:
-    {prog_name} --directory /path/to/search --size-in-mb 300
-
-  List files larger than 500MB without sizes:
-    {prog_name} -d /path/to/search -s 500 -n
-
-  Output as plain text with verbose logging:
-    {prog_name} -d /path/to/search -s 500 -nt -v
-"""
-    formatting.console.print(help_message)
-
-def main():
-    """Main entry point for the command-line interface."""
-    try:
-        prog_name = get_program_name()
-        parser = argparse.ArgumentParser(
-            prog=prog_name,
-            add_help=False,
-            formatter_class=argparse.RawTextHelpFormatter,
-        )
-
-        # File Search Options
-        search_group = parser.add_argument_group('File Search Options')
-        search_group.add_argument('-d', '--directory', metavar='DIRECTORY',
-                          help='Directory to search (default: current directory)',
-                          default=DEFAULT_DIR)
-        search_group.add_argument('-S', '--size-in-gb', metavar='SIZE', type=float,
-                          help=f'Size threshold in GB (default: {DEFAULT_SIZE_GB}GB)')
-        search_group.add_argument('-s', '--size-in-mb', metavar='SIZE', type=float,
-                          help=f'Size threshold in MB (default: {DEFAULT_SIZE_MB}MB)')
-
-        # Output Options
-        output_group = parser.add_argument_group('Output Options')
-        output_group.add_argument('-o', '--output', metavar='FILE',
-                          help='Save results to specified file')
-        output_group.add_argument('-n', '--no-size', action='store_true',
-                          help='Display files without their sizes')
-        output_group.add_argument('-nt', '--no-table', action='store_true',
-                          help='Output in plain text format (one file per line)')
-        output_group.add_argument('-v', '--verbose', action='store_true',
-                          help='Enable verbose output')
-
-        # Help Option
-        parser.add_argument('-h', '--help', action='store_true', help=argparse.SUPPRESS)
-
-        args, unknown = parser.parse_known_args()
-
-        if args.help:
-            show_help(prog_name)
-            sys.exit(0)
-
-        search_dir = args.directory
-        size_gb = args.size_in_gb
-        size_mb = args.size_in_mb
-        output_file = args.output
-
-        if size_gb is not None and size_mb is not None:
-            error_exit("You cannot use both --size-in-gb and --size-in-mb at the same time.")
-
-        if size_gb is not None:
-            size_mb = size_gb * 1024
-            size_unit = SIZE_UNIT_GB
-        elif size_mb is not None:
-            size_mb = size_mb
-            size_unit = SIZE_UNIT_MB
-        else:
-            size_mb = DEFAULT_SIZE_GB * 1024
-            size_unit = SIZE_UNIT_GB
-
-        if not os.path.isdir(search_dir):
-            error_exit(f"Directory '{search_dir}' does not exist or is not accessible.")
-
-        # Show ASCII art banner
-        formatting.print_ascii_art()
-        
-        if size_unit == SIZE_UNIT_GB:
-            size_display = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
-        else:
-            size_display = f"{size_mb:.0f} {SIZE_UNIT_MB}"
+    if size_unit == SIZE_UNIT_GB:
+        size_display = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
+    else:
+        size_display = f"{size_mb:.0f} {SIZE_UNIT_MB}"
             
-        formatting.print_status(f"Searching for files larger than {size_display} in {search_dir}...\n")
+    formatting.print_status(f"Searching for files larger than {size_display} in {directory}...\n")
 
-        with formatting.get_status_context("Searching..."):
-            find_files(search_dir, size_mb, output_file, size_unit,
-                           args.no_size, args.no_table, args.verbose)
-
-    except KeyboardInterrupt:
-        formatting.print_error("\nSearch interrupted by user.")
-        sys.exit(0)
+    with formatting.get_status_context("Searching..."):
+        find_files(directory, size_mb, output_file, size_unit,
+                  no_size, no_table, verbose)
 
 if __name__ == '__main__':
     main() 
