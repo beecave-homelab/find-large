@@ -12,6 +12,36 @@ from ..constants import (
 )
 from .core import find_files
 
+def scan_files(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
+    """Core function to handle file scanning logic."""
+    if size_gb is not None and size_mb is not None:
+        formatting.print_error("You cannot use both --size-in-gb and --size-in-mb at the same time.")
+        raise click.Abort()
+
+    if size_gb is not None:
+        size_mb = size_gb * 1024
+        size_unit = SIZE_UNIT_GB
+    elif size_mb is not None:
+        size_unit = SIZE_UNIT_MB
+    else:
+        size_mb = DEFAULT_SIZE_GB * 1024
+        size_unit = SIZE_UNIT_GB
+
+    if not os.path.isdir(directory):
+        formatting.print_error(f"Directory '{directory}' does not exist or is not accessible.")
+        raise click.Abort()
+
+    if size_unit == SIZE_UNIT_GB:
+        size_display = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
+    else:
+        size_display = f"{size_mb:.0f} {SIZE_UNIT_MB}"
+            
+    formatting.print_status(f"Searching for files larger than {size_display} in {directory}...\n")
+
+    with formatting.get_status_context("Searching..."):
+        find_files(directory, size_mb, output_file, size_unit,
+                  no_size, no_table, verbose)
+
 @click.command()
 @click.option('-d', '--directory', 'directory',
               type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
@@ -43,33 +73,7 @@ def main(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
         find-large files -d /path/to/search -s 500 -o results.txt
         find-large files -d /path/to/search -s 500 -n -nt -v
     """
-    if size_gb is not None and size_mb is not None:
-        formatting.print_error("You cannot use both --size-in-gb and --size-in-mb at the same time.")
-        raise click.Abort()
-
-    if size_gb is not None:
-        size_mb = size_gb * 1024
-        size_unit = SIZE_UNIT_GB
-    elif size_mb is not None:
-        size_unit = SIZE_UNIT_MB
-    else:
-        size_mb = DEFAULT_SIZE_GB * 1024
-        size_unit = SIZE_UNIT_GB
-
-    if not os.path.isdir(directory):
-        formatting.print_error(f"Directory '{directory}' does not exist or is not accessible.")
-        raise click.Abort()
-
-    if size_unit == SIZE_UNIT_GB:
-        size_display = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
-    else:
-        size_display = f"{size_mb:.0f} {SIZE_UNIT_MB}"
-            
-    formatting.print_status(f"Searching for files larger than {size_display} in {directory}...\n")
-
-    with formatting.get_status_context("Searching..."):
-        find_files(directory, size_mb, output_file, size_unit,
-                  no_size, no_table, verbose)
+    scan_files(directory, size_gb, size_mb, output_file, no_size, no_table, verbose)
 
 if __name__ == '__main__':
     main() 
