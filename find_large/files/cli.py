@@ -1,6 +1,9 @@
 """Command-line interface for finding large files."""
 
 import os
+from pathlib import Path
+from typing import Optional, Union
+
 import click
 from .. import formatting
 from ..constants import (
@@ -12,7 +15,15 @@ from ..constants import (
 )
 from .core import find_files
 
-def scan_files(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
+def scan_files(
+    directory: Union[str, Path],
+    size_gb: Optional[float],
+    size_mb: Optional[float],
+    output_file: Optional[str],
+    no_size: bool,
+    no_table: bool,
+    verbose: bool
+) -> None:
     """Core function to handle file scanning logic."""
     if size_gb is not None and size_mb is not None:
         formatting.print_error("You cannot use both --size-in-gb and --size-in-mb at the same time.")
@@ -32,9 +43,9 @@ def scan_files(directory, size_gb, size_mb, output_file, no_size, no_table, verb
         raise click.Abort()
 
     if size_unit == SIZE_UNIT_GB:
-        size_display = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
+        size_display: str = f"{size_mb/1024:.1f} {SIZE_UNIT_GB}"
     else:
-        size_display = f"{size_mb:.0f} {SIZE_UNIT_MB}"
+        size_display: str = f"{size_mb:.0f} {SIZE_UNIT_MB}"
             
     formatting.print_status(f"Searching for files larger than {size_display} in {directory}...\n")
 
@@ -65,7 +76,15 @@ def scan_files(directory, size_gb, size_mb, output_file, no_size, no_table, verb
 @click.option('-v', '--verbose',
               is_flag=True,
               help='Enable verbose output showing search progress')
-def main(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
+def main(
+    directory: Union[str, Path],
+    size_gb: Optional[float],
+    size_mb: Optional[float],
+    output_file: Optional[str],
+    no_size: bool,
+    no_table: bool,
+    verbose: bool
+) -> None:
     """Find large files in a directory.
     
     Examples:

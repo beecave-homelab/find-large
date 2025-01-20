@@ -10,7 +10,7 @@ from ..constants import (
     SIZE_UNIT_GB,
     SIZE_UNIT_MB,
 )
-from .core import find_large_videos, VIDEO_EXTENSIONS
+from .core import find_large_videos
 
 def scan_videos(directory, size_gb, size_mb, output_file, no_size, no_table, verbose):
     """Core function to handle video scanning logic."""
