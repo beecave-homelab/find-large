@@ -17,6 +17,7 @@ from .constants import (
     GB_TO_BYTES,
     TB_TO_BYTES,
     EXCLUDE_FOLDERS,
+    INCLUDE_HIDDEN_FOLDERS,
     SIZE_UNIT_GB,
     SIZE_UNIT_MB,
     SIZE_UNIT_TB,
@@ -65,7 +66,8 @@ class SizeScannerBase:
 
     def should_skip_path(self, path: str) -> bool:
         """Check if a path should be skipped."""
-        if os.path.basename(path).startswith('.'):
+        basename = os.path.basename(path)
+        if basename.startswith('.') and basename not in INCLUDE_HIDDEN_FOLDERS:
             return True
         
         abs_path = os.path.abspath(path)
