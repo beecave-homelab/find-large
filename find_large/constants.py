@@ -1,20 +1,21 @@
 """Constants used throughout the find-large-files package."""
 
 import os
+from typing import List, Final
 
 # Default search parameters
-DEFAULT_DIR = "."
-DEFAULT_SIZE_GB = 1
-DEFAULT_SIZE_MB = 100
+DEFAULT_DIR: Final[str] = "."
+DEFAULT_SIZE_GB: Final[float] = 1
+DEFAULT_SIZE_MB: Final[float] = 100
 
 # Size conversion constants
-KB_TO_BYTES = 1024
-MB_TO_BYTES = KB_TO_BYTES * 1024
-GB_TO_BYTES = MB_TO_BYTES * 1024
-TB_TO_BYTES = GB_TO_BYTES * 1024
+KB_TO_BYTES: Final[int] = 1024
+MB_TO_BYTES: Final[int] = KB_TO_BYTES * 1024
+GB_TO_BYTES: Final[int] = MB_TO_BYTES * 1024
+TB_TO_BYTES: Final[int] = GB_TO_BYTES * 1024
 
 # System folders to exclude from search
-EXCLUDE_FOLDERS = [
+EXCLUDE_FOLDERS: Final[List[str]] = [
     # System directories
     "/System",
     "/private",
@@ -146,6 +147,6 @@ EXCLUDE_FOLDERS = [
 ]
 
 # Size units for display
-SIZE_UNIT_GB = "GB"
-SIZE_UNIT_MB = "MB"
-SIZE_UNIT_TB = "TB" 
+SIZE_UNIT_GB: Final[str] = "GB"
+SIZE_UNIT_MB: Final[str] = "MB"
+SIZE_UNIT_TB: Final[str] = "TB" 

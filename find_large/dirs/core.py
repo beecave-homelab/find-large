@@ -5,7 +5,6 @@ import sys
 import logging
 from .. import formatting
 from ..constants import (
-    DEFAULT_DIR,
     MB_TO_BYTES,
     GB_TO_BYTES,
     EXCLUDE_FOLDERS,

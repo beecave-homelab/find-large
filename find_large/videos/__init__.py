@@ -1,3 +1,3 @@
-"""Video search functionality for find-large package."""
+"""Videos submodule for finding large video files."""
 
 from .core import find_large_videos, VIDEO_EXTENSIONS 

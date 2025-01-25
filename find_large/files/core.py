@@ -3,7 +3,11 @@
 import os
 import sys
 import logging
-from datetime import datetime
+from pathlib import Path
+from typing import List, Optional, Tuple, Union
+
+from rich.console import Console
+
 from .. import formatting
 from ..constants import (
     DEFAULT_DIR,
@@ -18,12 +22,12 @@ from ..constants import (
     SIZE_UNIT_TB,
 )
 
-def error_exit(message):
+def error_exit(message: str) -> None:
     """Exit the program with an error message."""
     formatting.print_error(message)
     sys.exit(1)
 
-def setup_logging(verbose):
+def setup_logging(verbose: bool) -> None:
     """Configure logging based on verbosity level."""
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
@@ -32,28 +36,36 @@ def setup_logging(verbose):
         datefmt='%H:%M:%S'
     )
 
-def find_files(search_dir, size_mb, output_file, size_unit, no_size=False, no_table=False, verbose=False):
+def find_files(
+    search_dir: Union[str, Path],
+    size_mb: float,
+    output_file: Optional[str],
+    size_unit: str,
+    no_size: bool = False,
+    no_table: bool = False,
+    verbose: bool = False
+) -> None:
     """Main function to find large files in a directory."""
     setup_logging(verbose)
     
-    files_list = []
-    total_bytes = 0
-    size_bytes_threshold = size_mb * MB_TO_BYTES
+    files_list: List[Tuple[str, int]] = []
+    total_bytes: int = 0
+    size_bytes_threshold: int = int(size_mb * MB_TO_BYTES)
 
     if verbose:
         logging.debug(f"Starting search in directory: {search_dir}")
         logging.debug(f"Size threshold: {size_mb} MB ({size_bytes_threshold} bytes)")
         logging.debug(f"Excluded folders: {len(EXCLUDE_FOLDERS)}")
 
-    exclude_folders_abs = [os.path.abspath(folder) for folder in EXCLUDE_FOLDERS]
+    exclude_folders_abs: List[str] = [os.path.abspath(folder) for folder in EXCLUDE_FOLDERS]
 
     try:
-        for root, dirs, files in os.walk(search_dir):
+        for root, dirs, files in os.walk(str(search_dir)):
             if verbose:
                 logging.debug(f"Scanning directory: {root}")
             
-            abs_root = os.path.abspath(root)
-            skip_dir = False
+            abs_root: str = os.path.abspath(root)
+            skip_dir: bool = False
             for exclude_path in exclude_folders_abs:
                 if abs_root.startswith(exclude_path):
                     if verbose:
@@ -64,7 +76,7 @@ def find_files(search_dir, size_mb, output_file, size_unit, no_size=False, no_ta
                 dirs[:] = []
                 continue
 
-            original_dirs_count = len(dirs)
+            original_dirs_count: int = len(dirs)
             dirs[:] = [d for d in dirs if not d.startswith('.')]
             if verbose and original_dirs_count != len(dirs):
                 logging.debug(f"Filtered out {original_dirs_count - len(dirs)} hidden directories")
@@ -72,9 +84,9 @@ def find_files(search_dir, size_mb, output_file, size_unit, no_size=False, no_ta
             for filename in files:
                 if filename.startswith('.'):
                     continue
-                file_path = os.path.join(root, filename)
+                file_path: str = os.path.join(root, filename)
                 try:
-                    size_bytes = os.path.getsize(file_path)
+                    size_bytes: int = os.path.getsize(file_path)
                     if size_bytes >= size_bytes_threshold:
                         if verbose:
                             logging.debug(f"Found large file: {file_path} ({size_bytes / MB_TO_BYTES:.2f} MB)")
@@ -90,9 +102,9 @@ def find_files(search_dir, size_mb, output_file, size_unit, no_size=False, no_ta
         logging.debug(f"Search completed. Found {len(files_list)} files matching criteria.")
 
     if no_size:
-        data_lines = [("File Location",)]
+        data_lines: List[Tuple[str, ...]] = [("File Location",)]
     else:
-        data_lines = [("File Location", "File Size")]
+        data_lines: List[Tuple[str, str]] = [("File Location", "File Size")]
 
     for file_path, size_bytes in files_list:
         total_bytes += size_bytes
@@ -100,17 +112,17 @@ def find_files(search_dir, size_mb, output_file, size_unit, no_size=False, no_ta
             data_lines.append((file_path,))
         else:
             if size_unit == SIZE_UNIT_GB:
-                size = size_bytes / GB_TO_BYTES
-                size_label = SIZE_UNIT_GB
+                size: float = size_bytes / GB_TO_BYTES
+                size_label: str = SIZE_UNIT_GB
             else:
                 size = size_bytes / MB_TO_BYTES
                 size_label = SIZE_UNIT_MB
-            size_formatted = f"{size:.2f} {size_label}"
+            size_formatted: str = f"{size:.2f} {size_label}"
             data_lines.append((file_path, size_formatted))
 
     if output_file:
         try:
-            file_console = formatting.Console(file=open(output_file, "w"), force_terminal=True)
+            file_console: Console = formatting.Console(file=open(output_file, "w"), force_terminal=True)
             formatting.format_table(data_lines, no_size, total_bytes, file_console, no_table)
             file_console.file.close()
             formatting.print_success(f"Results saved to {output_file}")
