@@ -14,6 +14,9 @@ MB_TO_BYTES: Final[int] = KB_TO_BYTES * 1024
 GB_TO_BYTES: Final[int] = MB_TO_BYTES * 1024
 TB_TO_BYTES: Final[int] = GB_TO_BYTES * 1024
 
+# Hidden folders to include in search
+INCLUDE_HIDDEN_FOLDERS: Final[set[str]] = {'.git', '.config', '.huggingface', '.local'}
+
 # System folders to exclude from search
 EXCLUDE_FOLDERS: Final[List[str]] = [
     # System directories
