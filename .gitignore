@@ -9,6 +9,7 @@
 !setup.py
 !requirements.txt
 !pyproject.toml
+!AGENTS.md
 
 # Allow Python package files
 !find_large/**/*.py
