@@ -4,41 +4,35 @@
 
 ### Install
 
-**Recommended (via pipx):**
+**Package manager:** PDM (use `pdm install` and `pdm run` for local development)
+
+**Recommended installation (via pipx):**
 
 ```bash
 pipx install "git+https://github.com/beecave-homelab/find-large.git"
 ```
 
-**In virtual environment:**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install "git+https://github.com/beecave-homelab/find-large.git"
-```
-
-**From source:**
+**From source (PDM):**
 
 ```bash
 git clone https://github.com/beecave-homelab/find-large.git
 cd find-large
-pip install .
+pdm install
 ```
 
 ### Run / Dev
 
-The tool provides three console scripts (unified CLI entry points):
+The tool provides three console scripts (unified CLI entry points). When developing locally, run them through `pdm run`:
 
 ```bash
 # Find large files
-find-large-files [OPTIONS]
+pdm run find-large-files [OPTIONS]
 
 # Find large directories
-find-large-dirs [OPTIONS]
+pdm run find-large-dirs [OPTIONS]
 
 # Find large video files
-find-large-vids [OPTIONS]
+pdm run find-large-vids [OPTIONS]
 ```
 
 **Common options across all commands:**
@@ -55,13 +49,13 @@ find-large-vids [OPTIONS]
 
 ```bash
 # Find files larger than 500MB
-find-large-files -s 500 -v
+pdm run find-large-files -s 500 -v
 
 # Find directories larger than 2GB, save to file
-find-large-dirs -S 2 -o results.txt
+pdm run find-large-dirs -S 2 -o results.txt
 
 # Find video files in /Users/movies with table output
-find-large-vids -d /Users/movies
+pdm run find-large-vids -d /Users/movies
 ```
 
 ### Tests
@@ -71,14 +65,14 @@ find-large-vids -d /Users/movies
 **Recommended setup for future testing:**
 
 ```bash
-# Install pytest (recommended framework)
-pip install pytest pytest-cov
+# Install test dependencies
+pdm install -G test
 
 # Run tests (once implemented)
-pytest
+pdm run pytest
 
 # Run with coverage
-pytest --cov=find_large
+pdm run pytest --cov=find_large
 ```
 
 Test files should be placed in `tests/` directory following pytest conventions.
@@ -90,35 +84,29 @@ Test files should be placed in `tests/` directory following pytest conventions.
 **Recommended tools to add:**
 
 ```bash
-# Install recommended tools
-pip install black ruff mypy
+# Install lint dependencies
+pdm install -G lint
 
-# Format code with Black
-black find_large/
+# Format code with Ruff
+pdm run ruff format find_large/
 
 # Lint with Ruff
-ruff check find_large/
+pdm run ruff check find_large/
 
 # Type check with mypy
-mypy find_large/
+pdm run mypy find_large/
 ```
 
 ### Build
 
 ```bash
-# Build source distribution
-python setup.py sdist
-
-# Build wheel distribution
-python setup.py bdist_wheel
-
-# Install in development mode
-pip install -e .
+# Build distributions
+pdm build
 ```
 
 ## Project Structure
 
-```
+```dir
 find-large/
 ├── find_large/              # Main package directory
 │   ├── __init__.py          # Package initialization, exports main()
@@ -168,13 +156,13 @@ find-large/
 
 ### Core
 
-- **Python**: 3.6+ (supports 3.6, 3.7, 3.8, 3.9, and newer)
+- **Python**: >=3.12
 - **setuptools**: Package management and distribution
 
 ### CLI & Output
 
-- **click** (8.1.8): Command-line interface framework for argument parsing and command structure
-- **rich** (>=10.0.0): Terminal formatting, colored output, tables, progress spinners, and ASCII art
+- **click**: Command-line interface framework for argument parsing and command structure
+- **rich**: Terminal formatting, colored output, tables, progress spinners, and ASCII art
 
 ### Standard Library Modules
 
@@ -211,7 +199,7 @@ find-large/
 
 ### Class Hierarchy
 
-```
+```text
 SizeScannerBase (find_large/core.py)
     ├── FileScanner (files/scanner.py)
     ├── DirectoryScanner (dirs/scanner.py)
@@ -310,10 +298,36 @@ SizeScannerBase (find_large/core.py)
 
 **Import Ordering**:
 
-1. Standard library imports (os, sys, logging, pathlib, typing)
-2. Third-party imports (rich, click)
-3. Relative imports for package modules (`from .. import formatting`)
-4. Sorted alphabetically within each section
+Imports must be ordered as follows:
+
+1. **Standard library** imports (os, sys, logging, pathlib, typing)
+2. **Third-party** imports (rich, click)
+3. **First-party/local** imports - use absolute imports for internal package modules (e.g., `from find_large import formatting` or `from find_large.files.scanner import FileScanner`)
+4. Sorted alphabetically within each group
+5. One blank line between groups
+
+**Import Style for Internal Modules**:
+
+- Never use relative imports for internal modules (e.g., avoid `from .. import formatting`)
+- Structure: Use full package paths starting with `find_large`
+- Prefer one import per line for clarity
+- Keep all imports at top of file (module scope)
+- Don't alias unless it adds clarity (e.g., `import numpy as np`)
+
+**Canonical example**:
+
+```python
+from __future__ import annotations
+
+import dataclasses
+import pathlib
+
+import httpx
+import pydantic
+
+from find_large import formatting
+from find_large.files.scanner import FileScanner
+```
 
 **Error Handling**:
 
@@ -325,7 +339,7 @@ SizeScannerBase (find_large/core.py)
 
 Use **Conventional Commits** with emoji prefixes:
 
-```
+```txt
 feat ✨: [description]
 fix 🐛: [description]
 style 💎: [description]
@@ -335,7 +349,7 @@ docs 📝: [description]
 
 **Examples**:
 
-```
+```txt
 feat ✨: Initial implementation of the find-large package
 fix 🐛: Refactor core functionality in find-large package
 style 💎: Enhance find_large package with Click command-line interface
@@ -474,14 +488,20 @@ Before creating a PR:
 **Steps**:
 
 1. Edit `find_large/cli.py`
+
 2. Add new Click option to command decorator:
+
    ```python
    @main.command('files')
    @click.option('--sort-by', type=click.Choice(['size', 'name', 'date']), default='size')
    ```
+
 3. Pass option to scanner initialization
+
 4. Modify scanner to handle sorting logic
+
 5. Update help text and docstrings
+
 6. Test with all command combinations
 
 **Reference**: `find_large/cli.py:280` lines for current option patterns
