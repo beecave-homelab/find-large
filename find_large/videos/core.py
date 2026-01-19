@@ -1,38 +1,63 @@
 """Core functionality for finding large video files."""
 
+import logging
 import os
 import sys
-import logging
-from .. import formatting
-from ..constants import (
-    DEFAULT_DIR,
-    MB_TO_BYTES,
-    GB_TO_BYTES,
+
+from find_large import formatting
+from find_large.constants import (
     EXCLUDE_FOLDERS,
+    GB_TO_BYTES,
+    MB_TO_BYTES,
     SIZE_UNIT_GB,
     SIZE_UNIT_MB,
 )
 
 # Common video file extensions
 VIDEO_EXTENSIONS = {
-    '.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm',
-    '.m4v', '.mpg', '.mpeg', '.3gp', '.3g2', '.m2ts', '.mts',
-    '.ts', '.vob', '.ogv', '.rm', '.rmvb', '.asf', '.divx'
+    ".mp4",
+    ".avi",
+    ".mkv",
+    ".mov",
+    ".wmv",
+    ".flv",
+    ".webm",
+    ".m4v",
+    ".mpg",
+    ".mpeg",
+    ".3gp",
+    ".3g2",
+    ".m2ts",
+    ".mts",
+    ".ts",
+    ".vob",
+    ".ogv",
+    ".rm",
+    ".rmvb",
+    ".asf",
+    ".divx",
 }
 
+
 def is_video_file(filename):
-    """Check if a file is a video file based on its extension."""
+    """Check if a file is a video file based on its extension.
+
+    Args:
+        filename: Name of the file to check.
+
+    Returns:
+        bool: True if the file has a video extension, False otherwise.
+    """
     return os.path.splitext(filename)[1].lower() in VIDEO_EXTENSIONS
 
-def find_large_videos(search_dir, size_mb, output_file, size_unit, no_size=False, no_table=False, verbose=False):
+
+def find_large_videos(
+    search_dir, size_mb, output_file, size_unit, no_size=False, no_table=False, verbose=False
+):
     """Main function to find large video files."""
     log_level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(message)s',
-        datefmt='%H:%M:%S'
-    )
-    
+    logging.basicConfig(level=log_level, format="%(asctime)s - %(message)s", datefmt="%H:%M:%S")
+
     videos_list = []
     total_bytes = 0
     size_bytes_threshold = size_mb * MB_TO_BYTES
@@ -48,7 +73,7 @@ def find_large_videos(search_dir, size_mb, output_file, size_unit, no_size=False
         for root, dirs, files in os.walk(search_dir):
             if verbose:
                 logging.debug(f"Scanning directory: {root}")
-            
+
             abs_root = os.path.abspath(root)
             skip_dir = False
             for exclude_path in exclude_folders_abs:
@@ -62,21 +87,24 @@ def find_large_videos(search_dir, size_mb, output_file, size_unit, no_size=False
                 continue
 
             # Filter out hidden directories
-            dirs[:] = [d for d in dirs if not d.startswith('.')]
-            
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+
             for filename in files:
-                if filename.startswith('.'):
+                if filename.startswith("."):
                     continue
-                    
+
                 if not is_video_file(filename):
                     continue
-                    
+
                 file_path = os.path.join(root, filename)
                 try:
                     size_bytes = os.path.getsize(file_path)
                     if size_bytes >= size_bytes_threshold:
                         if verbose:
-                            logging.debug(f"Found large video: {file_path} ({size_bytes / MB_TO_BYTES:.2f} MB)")
+                            logging.debug(
+                                f"Found large video: {file_path} "
+                                f"({size_bytes / MB_TO_BYTES:.2f} MB)"
+                            )
                         videos_list.append((file_path, size_bytes))
                 except (OSError, FileNotFoundError) as e:
                     if verbose:
@@ -118,4 +146,4 @@ def find_large_videos(search_dir, size_mb, output_file, size_unit, no_size=False
             formatting.print_error(f"An error occurred while writing to the output file: {e}")
             sys.exit(1)
     else:
-        formatting.format_table(data_lines, no_size, total_bytes, no_table=no_table) 
+        formatting.format_table(data_lines, no_size, total_bytes, no_table=no_table)
