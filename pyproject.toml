@@ -1,6 +1,6 @@
 [project]
 name = "find-large"
-version = "0.1.0"
+version = "0.2.0"
 description = "A tool to search for large files in a system"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,6 +25,9 @@ distribution = true
 [tool.pdm.dev-dependencies]
 lint = [
   "ruff>=0.6.9",
+  "mdformat<0.8.0,>=0.7.16",
+  "mdformat_frontmatter>=2.0.8",
+  "mdformat-gfm>=1.0.0",
 ]
 
 test = [
@@ -33,7 +36,7 @@ test = [
 ]
 
 [tool.ruff]
-target-version = "py36"
+target-version = "py312"
 line-length = 100
 preview = true
 
