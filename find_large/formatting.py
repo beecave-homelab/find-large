@@ -37,7 +37,7 @@ def print_ascii_art(script_type: str = "files") -> None:
     formatted_commands: list[str] = []
 
     for cmd in commands:
-        if cmd.lower() == script_type.upper():
+        if cmd.lower() == script_type.lower():
             formatted_commands.append(
                 f"[{STYLES['active_command']}]{cmd}[/{STYLES['active_command']}]"
             )
