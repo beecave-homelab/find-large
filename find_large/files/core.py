@@ -117,13 +117,14 @@ def find_files(
 
     if output_file:
         try:
-            file_console: Console = formatting.Console(
-                file=open(output_file, "w"), force_terminal=True
-            )
-            formatting.format_table(data_lines, no_size, total_bytes, file_console, no_table)
-            file_console.file.close()
+            with open(output_file, "w") as file_handle:
+                file_console: Console = formatting.Console(
+                    file=file_handle,
+                    force_terminal=True,
+                )
+                formatting.format_table(data_lines, no_size, total_bytes, file_console, no_table)
             formatting.print_success(f"Results saved to {output_file}")
-        except Exception as e:
+        except OSError as e:
             error_exit(f"An error occurred while writing to the output file: {e}")
     else:
         formatting.format_table(data_lines, no_size, total_bytes, no_table=no_table)
