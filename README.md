@@ -4,7 +4,7 @@ A command-line tool to search for and list large files in a directory. This util
 
 ## Versions
 
-**Current version**: 0.2.0 - Initial release with support for finding large files, directories, and video files.
+**Current version**: 0.2.0 - Current release with support for finding large files, directories, and video files.
 
 ## Table of Contents
 
