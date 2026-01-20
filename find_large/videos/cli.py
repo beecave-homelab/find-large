@@ -108,7 +108,7 @@ def main(
 
     Supported Video Formats:
         .3g2, .3gp, .asf, .avi, .divx, .flv, .m2ts, .m4v, .mkv, .mov, .mp4,
-        .mpeg, .mpg, .mts, .ogm, .ogv, .rm, .rmvb, .ts, .vob, .webm, .wmv
+        .mpeg, .mpg, .mts, .ogv, .rm, .rmvb, .ts, .vob, .webm, .wmv
 
     Examples:
     \b
