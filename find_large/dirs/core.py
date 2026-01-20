@@ -1,19 +1,29 @@
 """Core functionality for finding large directories."""
 
+import logging
 import os
 import sys
-import logging
-from .. import formatting
-from ..constants import (
-    MB_TO_BYTES,
-    GB_TO_BYTES,
+
+from find_large import formatting
+from find_large.constants import (
     EXCLUDE_FOLDERS,
+    GB_TO_BYTES,
+    MB_TO_BYTES,
     SIZE_UNIT_GB,
     SIZE_UNIT_MB,
 )
 
+
 def get_dir_size(path, verbose=False):
-    """Calculate total size of a directory."""
+    """Calculate total size of a directory.
+
+    Args:
+        path: Directory path to calculate size for.
+        verbose: Enable verbose logging.
+
+    Returns:
+        int: Total size in bytes, or 0 if an error occurs.
+    """
     total_size = 0
     try:
         for dirpath, dirnames, filenames in os.walk(path):
@@ -31,15 +41,14 @@ def get_dir_size(path, verbose=False):
         return 0
     return total_size
 
-def find_large_dirs(search_dir, size_mb, output_file, size_unit, no_size=False, no_table=False, verbose=False):
+
+def find_large_dirs(
+    search_dir, size_mb, output_file, size_unit, no_size=False, no_table=False, verbose=False
+):
     """Main function to find large directories."""
     log_level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(message)s',
-        datefmt='%H:%M:%S'
-    )
-    
+    logging.basicConfig(level=log_level, format="%(asctime)s - %(message)s", datefmt="%H:%M:%S")
+
     dirs_list = []
     total_bytes = 0
     size_bytes_threshold = size_mb * MB_TO_BYTES
@@ -54,7 +63,7 @@ def find_large_dirs(search_dir, size_mb, output_file, size_unit, no_size=False, 
         for root, dirs, _ in os.walk(search_dir):
             if verbose:
                 logging.debug(f"Scanning directory: {root}")
-            
+
             abs_root = os.path.abspath(root)
             skip_dir = False
             for exclude_path in exclude_folders_abs:
@@ -68,15 +77,17 @@ def find_large_dirs(search_dir, size_mb, output_file, size_unit, no_size=False, 
                 continue
 
             # Filter out hidden directories
-            dirs[:] = [d for d in dirs if not d.startswith('.')]
-            
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+
             # Calculate directory size
             dir_size = get_dir_size(abs_root, verbose)
             if dir_size >= size_bytes_threshold:
                 if verbose:
-                    logging.debug(f"Found large directory: {abs_root} ({dir_size / MB_TO_BYTES:.2f} MB)")
+                    logging.debug(
+                        f"Found large directory: {abs_root} ({dir_size / MB_TO_BYTES:.2f} MB)"
+                    )
                 dirs_list.append((abs_root, dir_size))
-                
+
     except Exception as e:
         formatting.print_error(f"An error occurred during directory search: {e}")
         sys.exit(1)
@@ -89,8 +100,15 @@ def find_large_dirs(search_dir, size_mb, output_file, size_unit, no_size=False, 
     else:
         data_lines = [("Directory Location", "Total Size")]
 
-    for dir_path, size_bytes in sorted(dirs_list, key=lambda x: x[1], reverse=True):
-        total_bytes += size_bytes
+    sorted_dirs = sorted(dirs_list, key=lambda x: x[1], reverse=True)
+    counted_paths = []
+    for dir_path, size_bytes in sorted_dirs:
+        abs_path = os.path.abspath(dir_path)
+        if not any(
+            abs_path == parent or abs_path.startswith(parent + os.sep) for parent in counted_paths
+        ):
+            total_bytes += size_bytes
+            counted_paths.append(abs_path)
         if no_size:
             data_lines.append((dir_path,))
         else:
@@ -113,4 +131,4 @@ def find_large_dirs(search_dir, size_mb, output_file, size_unit, no_size=False, 
             formatting.print_error(f"An error occurred while writing to the output file: {e}")
             sys.exit(1)
     else:
-        formatting.format_table(data_lines, no_size, total_bytes, no_table=no_table) 
+        formatting.format_table(data_lines, no_size, total_bytes, no_table=no_table)

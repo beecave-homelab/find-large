@@ -4,7 +4,7 @@ A command-line tool to search for and list large files in a directory. This util
 
 ## Versions
 
-**Current version**: 0.1.0 - Initial release with support for finding large files, directories, and video files.
+**Current version**: 0.2.0 - Current release with support for finding large files, directories, and video files.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ A command-line tool to search for and list large files in a directory. This util
 ## Badges
 
 ![Python](https://img.shields.io/badge/python-3.6%2B-blue)
-![Version](https://img.shields.io/badge/version-0.1.0-green)
+![Version](https://img.shields.io/badge/version-0.2.0-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Installation

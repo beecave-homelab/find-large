@@ -1,7 +1,7 @@
 """Constants used throughout the find-large-files package."""
 
 import os
-from typing import List, Final
+from typing import Final
 
 # Default search parameters
 DEFAULT_DIR: Final[str] = "."
@@ -15,10 +15,10 @@ GB_TO_BYTES: Final[int] = MB_TO_BYTES * 1024
 TB_TO_BYTES: Final[int] = GB_TO_BYTES * 1024
 
 # Hidden folders to include in search
-INCLUDE_HIDDEN_FOLDERS: Final[set[str]] = {'.git', '.config', '.huggingface', '.local'}
+INCLUDE_HIDDEN_FOLDERS: Final[set[str]] = {".git", ".config", ".huggingface", ".local"}
 
 # System folders to exclude from search
-EXCLUDE_FOLDERS: Final[List[str]] = [
+EXCLUDE_FOLDERS: Final[list[str]] = [
     # System directories
     "/System",
     "/private",
@@ -26,7 +26,6 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     "/Library/Extensions",
     "/System/Library/PrivateFrameworks",
     "/Library/Kexts/",
-    
     # User Library directories
     os.path.expanduser("~/Library/Mail"),
     os.path.expanduser("~/Library/Messages"),
@@ -45,7 +44,6 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/Application Support/FaceTime"),
     os.path.expanduser("~/Library/Application Support/com.apple.avfoundation/Frecents"),
     os.path.expanduser("~/Library/Application Support/CallHistoryDB"),
-    
     # Additional Library directories
     os.path.expanduser("~/Library/Assistant/SiriVocabulary"),
     os.path.expanduser("~/Library/Daemon Containers"),
@@ -63,13 +61,14 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/Shortcuts"),
     os.path.expanduser("~/Library/Suggestions"),
     os.path.expanduser("~/Library/Weather"),
-    
     # Group Containers
     os.path.expanduser("~/Library/Group Containers/group.com.apple.stocks-news"),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.photolibraryd.private"),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.accessibility.voicebanking"),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.stocks"),
-    os.path.expanduser("~/Library/Group Containers/group.com.apple.secure-control-center-preferences"),
+    os.path.expanduser(
+        "~/Library/Group Containers/group.com.apple.secure-control-center-preferences"
+    ),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.chronod"),
     os.path.expanduser("~/Library/Group Containers/com.apple.MailPersonaStorage"),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.private.translation"),
@@ -101,7 +100,6 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/Group Containers/group.com.apple.PegasusConfiguration"),
     os.path.expanduser("~/Library/Group Containers/group.com.apple.shortcuts"),
     os.path.expanduser("~/Library/Group Containers/com.apple.MessagesLegacyTransferArchive"),
-    
     # Containers
     os.path.expanduser("~/Library/Containers/com.apple.VoiceMemos"),
     os.path.expanduser("~/Library/Containers/com.apple.archiveutility"),
@@ -116,7 +114,6 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/Containers/com.apple.corerecents.recentsd/Data/Library/Recents"),
     os.path.expanduser("~/Library/Containers/com.apple.stocks"),
     os.path.expanduser("~/Library/Containers/com.apple.Safari.WebApp"),
-    
     # Additional system directories
     os.path.expanduser("~/Library/ContainerManager"),
     os.path.expanduser("~/Library/PersonalizationPortrait"),
@@ -127,7 +124,6 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/CoreFollowUp"),
     os.path.expanduser("~/Library/StatusKit"),
     os.path.expanduser("~/Library/DoNotDisturb"),
-    
     # Cache directories
     os.path.expanduser("~/Library/Caches/com.apple.HomeKit"),
     os.path.expanduser("~/Library/Caches/CloudKit"),
@@ -139,17 +135,18 @@ EXCLUDE_FOLDERS: Final[List[str]] = [
     os.path.expanduser("~/Library/Caches/com.apple.homed"),
     os.path.expanduser("~/Library/Caches/com.apple.findmy.fmipcore"),
     os.path.expanduser("~/Library/Caches/com.apple.ap.adprivacyd"),
-    
     # Other
     os.path.expanduser("~/.Trash"),
     os.path.expanduser("~/Pictures/Photos Library.photoslibrary"),
     os.path.expanduser("~/Dropbox"),
     os.path.expanduser("~/Library/CloudStorage/Dropbox"),
     os.path.expanduser("~/Library/Containers/com.apple.CloudPhotosConfiguration"),
-    os.path.expanduser("~/Library/Containers/com.apple.dp.PrivateFederatedLearning.DPMLRuntimePluginClassB/"),
+    os.path.expanduser(
+        "~/Library/Containers/com.apple.dp.PrivateFederatedLearning.DPMLRuntimePluginClassB/"
+    ),
 ]
 
 # Size units for display
 SIZE_UNIT_GB: Final[str] = "GB"
 SIZE_UNIT_MB: Final[str] = "MB"
-SIZE_UNIT_TB: Final[str] = "TB" 
+SIZE_UNIT_TB: Final[str] = "TB"
