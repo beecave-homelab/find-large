@@ -55,3 +55,8 @@
 **/.idea/
 **/.vscode/
 **/.DS_Store
+
+# Github
+!.github/workflows/**
+!.github/ISSUE_TEMPLATE/**
+!.github/PULL_REQUESTS/**
