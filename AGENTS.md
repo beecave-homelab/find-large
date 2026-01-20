@@ -79,23 +79,23 @@ Test files should be placed in `tests/` directory following pytest conventions.
 
 ### Lint / Format / Typecheck
 
-**Current status:** No linting/formatting tools configured yet
-
-**Recommended tools to add:**
+**Configured scripts (via PDM):**
 
 ```bash
 # Install lint dependencies
 pdm install -G lint
 
-# Format code with Ruff
-pdm run ruff format find_large/
+# Format code
+pdm run format
 
-# Lint with Ruff
-pdm run ruff check find_large/
+# Lint code
+pdm run lint
 
-# Type check with mypy
-pdm run mypy find_large/
+# Auto-fix lint issues
+pdm run fix
 ```
+
+Type checking is not currently configured; add a PDM script if needed.
 
 ### Build
 
@@ -132,7 +132,6 @@ find-large/
 │       └── scanner.py       # [MODERN] VideoScanner class (OOP)
 ├── tests/                   # Test directory (placeholder - not implemented)
 ├── docs/                    # Documentation directory (placeholder)
-├── setup.py                 # Package configuration and entry points
 ├── requirements.txt         # Dependencies (click 8.1.8, rich >=10.0.0)
 ├── README.md                # User documentation
 ├── LICENSE                  # MIT License
@@ -146,7 +145,7 @@ find-large/
 - **Unified CLI**: Primary interface in `find_large/cli.py` (280 lines)
 - **Legacy CLIs**: Individual CLIs in submodules (`cli.py`) are outdated
 
-**Entry points** (defined in setup.py):
+**Entry points** (defined in pyproject.toml under `[project.scripts]`):
 
 - `find-large-files` → `find_large.files.cli:main`
 - `find-large-dirs` → `find_large.dirs.cli:main`
@@ -157,7 +156,7 @@ find-large/
 ### Core
 
 - **Python**: >=3.12
-- **setuptools**: Package management and distribution
+- **PDM / pdm-backend**: Package management and distribution
 
 ### CLI & Output
 
@@ -415,7 +414,7 @@ Before creating a PR:
 ### ⚠️ Ask First
 
 - **Modifying SizeScannerBase**: Changes to base class affect all scanners - discuss impact first
-- **Adding new entry points**: Adding new console scripts requires setup.py changes - coordinate with maintainer
+- **Adding new entry points**: Adding new console scripts requires pyproject.toml changes - coordinate with maintainer
 - **Changing constants.py**: Modifications to size thresholds or exclusions affect all commands - verify implications
 - **Removing legacy code**: While core.py files are legacy, they're currently active - plan migration before removal
 - **Adding new dependencies**: External libraries increase package size - evaluate necessity
@@ -446,7 +445,7 @@ Before creating a PR:
 2. Create new scanner module: `find_large/images/` with `__init__.py`, `cli.py`, `core.py`, `scanner.py`
 3. Implement ImageScanner class in `images/scanner.py` inheriting from SizeScannerBase
 4. Add `images` command to unified CLI in `find_large/cli.py`
-5. Add entry point to setup.py: `find-large-images → find_large.images.cli:main`
+5. Add entry point to pyproject.toml: `find-large-images → find_large.images.cli:main`
 6. Test new command with various file sizes and directories
 
 **Reference**: See `videos/scanner.py` for pattern to follow
@@ -476,7 +475,7 @@ Before creating a PR:
    - `should_include_file()`: Filter by audio extensions
    - `get_item_size()`: Calculate file or directory size
 4. Add command to unified CLI in `find_large/cli.py`
-5. Add entry point to `setup.py`
+5. Add entry point to `pyproject.toml`
 6. Test with various directories and file sizes
 
 **Reference**: `videos/scanner.py:57` lines shows minimal scanner implementation
@@ -575,7 +574,7 @@ Before creating a PR:
 
 - Verify installation: `pip list | grep find-large`
 - Reinstall: `pip install --force-reinstall "git+https://github.com/beecave-homelab/find-large.git"`
-- Check setup.py entry points are correctly defined
+- Check pyproject.toml entry points are correctly defined
 - Use direct invocation as fallback: `python -m find_large files`
 - Ensure Python scripts directory is in PATH
 
