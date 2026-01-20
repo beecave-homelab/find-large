@@ -84,8 +84,12 @@ main() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -o|--output_file)
-        output_file="$2"
-        shift 2
+        if [[ -n "${2:-}" && "${2}" != -* ]]; then
+          output_file="$2"
+          shift 2
+        else
+          error_exit "Missing output file path for $1"
+        fi
         ;;
       -h|--help)
         show_help
