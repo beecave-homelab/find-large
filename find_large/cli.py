@@ -100,6 +100,13 @@ def validate_size_options(size_gb: float | None, size_mb: float | None) -> tuple
         )
         raise click.Abort()
 
+    if size_gb is not None and size_gb <= 0:
+        formatting.print_error("Size in GB must be greater than 0.")
+        raise click.Abort()
+    if size_mb is not None and size_mb <= 0:
+        formatting.print_error("Size in MB must be greater than 0.")
+        raise click.Abort()
+
     if size_gb is not None:
         size_mb = size_gb * 1024
         size_unit = SIZE_UNIT_GB
