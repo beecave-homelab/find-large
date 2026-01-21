@@ -11,6 +11,7 @@
 !AGENTS.md
 !VERSIONS.md
 !TESTING.md
+!project-overview.md
 
 # Allow scripts
 !scripts/**
@@ -24,6 +25,7 @@
 
 # Allow tests
 !tests/**/*.py
+!tests/fixtures/**
 
 # Still ignore these even if they match above rules
 **/__pycache__/
