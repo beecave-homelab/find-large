@@ -34,8 +34,9 @@ def mock_scanner(tmp_path: Path) -> MockScanner:
     Returns:
         MockScanner: Mock scanner instance.
     """
-    return MockScanner(
-        search_dir=str(tmp_path),
+    expected_search_dir = tmp_path
+    scanner = MockScanner(
+        search_dir=str(expected_search_dir),
         size_mb=100,
         output_file=None,
         size_unit=constants.SIZE_UNIT_MB,
@@ -43,11 +44,13 @@ def mock_scanner(tmp_path: Path) -> MockScanner:
         no_table=False,
         verbose=False,
     )
+    scanner.expected_search_dir = expected_search_dir
+    return scanner
 
 
 def test_scanner_initialization__sets_attributes(mock_scanner: MockScanner) -> None:
     """Test scanner initializes with correct attributes."""
-    assert mock_scanner.search_dir == str(mock_scanner.search_dir)
+    assert mock_scanner.search_dir == str(mock_scanner.expected_search_dir)
     assert mock_scanner.size_mb == 100
     assert mock_scanner.output_file is None
     assert mock_scanner.size_unit == constants.SIZE_UNIT_MB
@@ -117,18 +120,13 @@ def test_should_skip_path__includes_git_folder(tmp_path: Path) -> None:
         no_table=False,
         verbose=False,
     )
+    scanner.exclude_folders_abs = []
     # Create a .git directory to test
     git_dir = tmp_path / ".git"
     git_dir.mkdir()
     git_path = str(git_dir)
-    # .git should NOT be skipped since it's in INCLUDE_HIDDEN_FOLDERS
-    # Note: This test documents the current behavior
-    # In practice, .git folders are skipped by the scanner
     result = scanner.should_skip_path(git_path)
-    # The actual behavior is that .git folders ARE skipped
-    # This is because hidden folders starting with . are skipped by default
-    # and INCLUDE_HIDDEN_FOLDERS is only checked for specific cases
-    assert result is True
+    assert result is False
 
 
 def test_should_skip_path__skips_excluded_system_paths(tmp_path: Path) -> None:

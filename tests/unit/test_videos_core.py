@@ -102,13 +102,15 @@ class TestFindLargeVideos:
 
         try:
             (tmp_path / "large.mp4").chmod(0o000)
-            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
-        except Exception:
+        except OSError:
             pass
+
+        try:
+            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
         finally:
             try:
                 (tmp_path / "large.mp4").chmod(0o644)
-            except Exception:
+            except OSError:
                 pass
 
     def test_find_large_videos_handles_oserror(self, tmp_path: Path) -> None:
@@ -117,13 +119,15 @@ class TestFindLargeVideos:
 
         try:
             (tmp_path / "large.mp4").chmod(0o000)
-            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
-        except Exception:
+        except OSError:
             pass
+
+        try:
+            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
         finally:
             try:
                 (tmp_path / "large.mp4").chmod(0o644)
-            except Exception:
+            except OSError:
                 pass
 
     def test_find_large_videos_handles_output_file_error(self, tmp_path: Path) -> None:
@@ -203,11 +207,13 @@ class TestFindLargeVideos:
 
         try:
             (tmp_path / "large.mp4").chmod(0o000)
-            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
-        except Exception:
+        except OSError:
             pass
+
+        try:
+            find_large_videos(str(tmp_path), 0.001, None, constants.SIZE_UNIT_MB, verbose=True)
         finally:
             try:
                 (tmp_path / "large.mp4").chmod(0o644)
-            except Exception:
+            except OSError:
                 pass

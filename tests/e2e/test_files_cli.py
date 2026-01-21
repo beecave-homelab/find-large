@@ -13,7 +13,11 @@ class TestFilesCLIEntryPoints:
 
     @pytest.fixture
     def runner(self) -> CliRunner:
-        """Create a CLI runner for testing."""
+        """Create a CLI runner for testing.
+
+        Returns:
+            CliRunner: Click test runner instance.
+        """
         return CliRunner()
 
     def test_main_help_displays_help(self, runner: CliRunner) -> None:
@@ -97,7 +101,9 @@ class TestScanFilesFunction:
         with pytest.raises(Exception):
             scan_files("/nonexistent", None, None, None, False, False, False)
 
-    def test_scan_files_with_output_file(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    def test_scan_files_with_output_file(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
         """Test scan_files with output file."""
         output_file = tmp_path / "output.txt"
         scan_files(str(tmp_path), None, 1, str(output_file), False, False, False)

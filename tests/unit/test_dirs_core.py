@@ -40,14 +40,15 @@ class TestGetDirSize:
 
         try:
             (test_dir / "file1.txt").chmod(0o000)
-            get_dir_size(str(test_dir), verbose=True)
-        except Exception:
+        except OSError:
             pass
-        finally:
-            try:
-                (test_dir / "file1.txt").chmod(0o644)
-            except Exception:
-                pass
+
+        get_dir_size(str(test_dir), verbose=True)
+
+        try:
+            (test_dir / "file1.txt").chmod(0o644)
+        except OSError:
+            pass
 
     def test_get_dir_size_handles_oserror(self, tmp_path: Path) -> None:
         """Test get_dir_size handles OSError gracefully."""
@@ -57,14 +58,15 @@ class TestGetDirSize:
 
         try:
             (test_dir / "file1.txt").chmod(0o000)
-            get_dir_size(str(test_dir), verbose=True)
-        except Exception:
+        except OSError:
             pass
-        finally:
-            try:
-                (test_dir / "file1.txt").chmod(0o644)
-            except Exception:
-                pass
+
+        get_dir_size(str(test_dir), verbose=True)
+
+        try:
+            (test_dir / "file1.txt").chmod(0o644)
+        except OSError:
+            pass
 
 
 class TestFindLargeDirs:

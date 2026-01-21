@@ -13,7 +13,11 @@ class TestVideosCLIEntryPoints:
 
     @pytest.fixture
     def runner(self) -> CliRunner:
-        """Create a CLI runner for testing."""
+        """Create a CLI runner for testing.
+
+        Returns:
+            CliRunner: Click test runner instance.
+        """
         return CliRunner()
 
     def test_main_help_displays_help(self, runner: CliRunner) -> None:
@@ -69,17 +73,13 @@ class TestVideosCLIEntryPoints:
 class TestScanVideosFunction:
     """Test cases for scan_videos function."""
 
-    def test_scan_videos_with_gb_size(
-        self, tmp_path: Path, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_with_gb_size(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos with GB size option."""
         scan_videos(str(tmp_path), 1.0, None, None, False, False, False)
         captured = capsys.readouterr()
         assert "Searching for videos larger than" in captured.out
 
-    def test_scan_videos_with_mb_size(
-        self, tmp_path: Path, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_with_mb_size(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos with MB size option."""
         scan_videos(str(tmp_path), None, 500, None, False, False, False)
         captured = capsys.readouterr()
@@ -98,9 +98,7 @@ class TestScanVideosFunction:
         with pytest.raises(Exception):
             scan_videos(str(tmp_path), 1.0, 500, None, False, False, False)
 
-    def test_scan_videos_raises_on_invalid_directory(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_raises_on_invalid_directory(self, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos raises error on invalid directory."""
         with pytest.raises(Exception):
             scan_videos("/nonexistent", None, None, None, False, False, False)
@@ -113,25 +111,19 @@ class TestScanVideosFunction:
         scan_videos(str(tmp_path), None, 1, str(output_file), False, False, False)
         assert output_file.exists()
 
-    def test_scan_videos_no_size_flag(
-        self, tmp_path: Path, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_no_size_flag(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos with no-size flag."""
         scan_videos(str(tmp_path), None, 1, None, True, False, False)
         captured = capsys.readouterr()
         assert "Searching for videos larger than" in captured.out
 
-    def test_scan_videos_no_table_flag(
-        self, tmp_path: Path, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_no_table_flag(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos with no-table flag."""
         scan_videos(str(tmp_path), None, 1, None, False, True, False)
         captured = capsys.readouterr()
         assert "Searching for videos larger than" in captured.out
 
-    def test_scan_videos_verbose_flag(
-        self, tmp_path: Path, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_scan_videos_verbose_flag(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
         """Test scan_videos with verbose flag."""
         scan_videos(str(tmp_path), None, 1, None, False, False, True)
         captured = capsys.readouterr()

@@ -13,7 +13,11 @@ class TestDirsCLIEntryPoints:
 
     @pytest.fixture
     def runner(self) -> CliRunner:
-        """Create a CLI runner for testing."""
+        """Create a CLI runner for testing.
+
+        Returns:
+            CliRunner: Click test runner instance.
+        """
         return CliRunner()
 
     def test_main_help_displays_help(self, runner: CliRunner) -> None:

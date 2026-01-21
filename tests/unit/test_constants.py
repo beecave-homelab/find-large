@@ -1,6 +1,9 @@
 """Unit tests for constants module."""
 
 import os
+import platform
+
+import pytest
 
 from find_large import constants
 
@@ -70,18 +73,21 @@ def test_exclude_folders_not_empty() -> None:
     assert len(constants.EXCLUDE_FOLDERS) > 0
 
 
+@pytest.mark.skipif(platform.system() != "Darwin", reason="macOS-specific paths")
 def test_exclude_folders_contains_system_directories() -> None:
     """Test EXCLUDE_FOLDERS contains system directories."""
     assert "/System" in constants.EXCLUDE_FOLDERS
     assert "/private" in constants.EXCLUDE_FOLDERS
 
 
+@pytest.mark.skipif(platform.system() != "Darwin", reason="macOS-specific paths")
 def test_exclude_folders_contains_trash() -> None:
     """Test EXCLUDE_FOLDERS contains Trash."""
     trash_path = os.path.expanduser("~/.Trash")
     assert trash_path in constants.EXCLUDE_FOLDERS
 
 
+@pytest.mark.skipif(platform.system() != "Darwin", reason="macOS-specific paths")
 def test_exclude_folders_contains_photos_library() -> None:
     """Test EXCLUDE_FOLDERS contains Photos Library."""
     photos_path = os.path.expanduser("~/Pictures/Photos Library.photoslibrary")
