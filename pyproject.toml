@@ -66,6 +66,9 @@ convention = "google"
 [tool.pytest.ini_options]
 addopts = "--maxfail=1 -q --import-mode=append"
 
+[tool.coverage.run]
+omit = ["find_large/__main__.py"]
+
 [tool.pdm.scripts]
 lint = "ruff check ."
 format = "ruff format ."

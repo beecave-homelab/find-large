@@ -19,9 +19,17 @@
 - **Improved**: Internal refactors to modernize scanner implementations.
 - **Updated**: Documentation updates for AI agent/contributor guidance.
 
+### 🐛 **Fixes in v0.2.0**
+
+- **Fixed**: Added validation for positive size values in the CLI.
+- **Fixed**: Added validation for output file paths in local CI automation.
+- **Fixed**: Updated video formats in CLI documentation.
+- **Fixed**: Corrected output file handling in legacy core implementation.
+- **Fixed**: Resolved case sensitivity issues in ASCII art rendering.
+
 ### 📝 **Key Commits in v0.2.0**
 
-`215e6ff`, `3d7ee2a`, `7120b3f`, `85ca041`, `3578784`
+`0623ede`, `256beb9`, `680ab22`, `9c0eccc`, `0071c3b`, `05eec97`
 
 ______________________________________________________________________
 
