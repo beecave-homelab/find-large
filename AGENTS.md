@@ -117,18 +117,18 @@ find-large/
 │   ├── formatting.py        # Output formatting utilities (tables, colors)
 │   ├── files/               # File scanning module
 │   │   ├── __init__.py
-│   │   ├── cli.py           # [LEGACY] Individual CLI for files command
-│   │   ├── core.py          # [LEGACY] Procedural implementation
+│   │   ├── cli.py           # [PRODUCTION] Entry point CLI for files command
+│   │   ├── core.py          # [PRODUCTION] Procedural implementation
 │   │   └── scanner.py       # [MODERN] FileScanner class (OOP)
 │   ├── dirs/                # Directory scanning module
 │   │   ├── __init__.py
-│   │   ├── cli.py           # [LEGACY] Individual CLI for dirs command
-│   │   ├── core.py          # [LEGACY] Procedural implementation
+│   │   ├── cli.py           # [PRODUCTION] Entry point CLI for dirs command
+│   │   ├── core.py          # [PRODUCTION] Procedural implementation
 │   │   └── scanner.py       # [MODERN] DirectoryScanner class (OOP)
 │   └── videos/              # Video scanning module
 │       ├── __init__.py
-│       ├── cli.py           # [LEGACY] Individual CLI for vids command
-│       ├── core.py          # [LEGACY] Procedural implementation
+│       ├── cli.py           # [PRODUCTION] Entry point CLI for vids command
+│       ├── core.py          # [PRODUCTION] Procedural implementation
 │       └── scanner.py       # [MODERN] VideoScanner class (OOP)
 ├── tests/                   # Test directory (placeholder - not implemented)
 ├── docs/                    # Documentation directory (placeholder)
@@ -140,10 +140,10 @@ find-large/
 
 **Key architectural notes:**
 
-- **Modern code**: `scanner.py` files use OOP with SizeScannerBase inheritance
-- **Legacy code**: `core.py` files use procedural implementation (duplicated logic)
-- **Unified CLI**: Primary interface in `find_large/cli.py` (280 lines)
-- **Legacy CLIs**: Individual CLIs in submodules (`cli.py`) are outdated
+- **Production code**: `core.py` files contain procedural implementations used by entry points
+- **Modern code**: `scanner.py` files use OOP with SizeScannerBase inheritance (used by unified CLI only)
+- **Entry point CLIs**: Individual CLIs in submodules (`cli.py`) are the active entry points
+- **Unified CLI**: Alternative interface in `find_large/cli.py` (not used by entry points)
 
 **Entry points** (defined in pyproject.toml under `[project.scripts]`):
 
@@ -177,24 +177,26 @@ find-large/
 
 ## Architecture & Patterns
 
-### Modern vs Legacy Code
+### Production vs Modern Code
 
-**IMPORTANT**: The codebase contains both modern and legacy implementations. New code should follow modern patterns.
+**IMPORTANT**: The codebase contains both production and modern implementations.
 
-**Modern Code** (use this pattern for new features):
+**Production Code** (used by entry points):
+
+- **Location**: `core.py` files in submodules
+- **Pattern**: Procedural implementation
+- **Entry points**: Console scripts invoke these via `cli.py` files in submodules
+- **Status**: Active production code used by all entry points
+
+**Modern Code** (OOP alternative, not used by entry points):
 
 - **Location**: `scanner.py` files in each submodule
 - **Pattern**: Object-oriented with class inheritance
 - **Base**: `SizeScannerBase` (find_large/core.py:138 lines)
 - **Implementation**: `FileScanner`, `DirectoryScanner`, `VideoScanner`
+- **Usage**: Only used by unified CLI (`find_large/cli.py`), not by entry points
 - **Benefits**: Code reuse, consistent interface, easier testing
-
-**Legacy Code** (avoid extending this pattern):
-
-- **Location**: `core.py` files in submodules
-- **Pattern**: Procedural implementation
-- **Status**: Duplicated logic across three modules
-- **Migration**: Eventually replace with scanner.py implementations
+- **Note**: Consider migrating to this pattern in future
 
 ### Class Hierarchy
 
@@ -225,12 +227,14 @@ SizeScannerBase (find_large/core.py)
 - Features ASCII art help display
 - Centralized option definitions and validation
 - Invokes scanner classes for actual work
+- **Note**: Not used by entry points (console scripts use submodule CLIs)
 
-**Legacy CLIs** (in submodules):
+**Entry Point CLIs** (in submodules):
 
 - `files/cli.py`, `dirs/cli.py`, `videos/cli.py`
-- Standalone implementations that duplicate functionality
-- Only maintained for backward compatibility
+- Used by console scripts defined in pyproject.toml
+- Invoke procedural implementations in `core.py` files
+- These are the active production code paths
 
 ### Constants Configuration
 
@@ -277,7 +281,7 @@ SizeScannerBase (find_large/core.py)
 **Type Hints**:
 
 - **Modern code** (scanner.py, cli.py, core.py): Full type hints with typing module
-- **Legacy code** (submodule core.py files): No type hints
+- **Production code** (submodule core.py files): No type hints
 - **New code**: Always include type hints using `Optional`, `List`, `Tuple`, `Union`, `Set`, `Dict`, `Final`
 - Example: `def scan_directory(directory: str, min_size: int) -> List[Tuple[str, int]]:`
 
@@ -414,9 +418,9 @@ Before creating a PR:
 ### ⚠️ Ask First
 
 - **Modifying SizeScannerBase**: Changes to base class affect all scanners - discuss impact first
-- **Adding new entry points**: Adding new console scripts requires pyproject.toml changes - coordinate with maintainer
+- **Migrating to scanner.py pattern**: Production code uses core.py files - plan migration carefully
 - **Changing constants.py**: Modifications to size thresholds or exclusions affect all commands - verify implications
-- **Removing legacy code**: While core.py files are legacy, they're currently active - plan migration before removal
+- **Maintaining production code**: Core.py files are active production code - plan migration carefully
 - **Adding new dependencies**: External libraries increase package size - evaluate necessity
 - **Breaking changes to CLI**: Changes to command structure or options affect user workflow - consider backward compatibility
 - **Modifying video format list**: Adding/removing video extensions affects users - confirm with stakeholder
@@ -470,13 +474,15 @@ Before creating a PR:
 **Steps**:
 
 1. Create new submodule: `find_large/audio/`
-2. Implement `AudioScanner` class inheriting from `SizeScannerBase`
-3. Override key methods:
+2. Implement `AudioScanner` class inheriting from `SizeScannerBase` in `audio/scanner.py`
+3. Implement procedural `find_audio()` function in `audio/core.py` for entry point
+4. Override key methods in scanner:
    - `should_include_file()`: Filter by audio extensions
    - `get_item_size()`: Calculate file or directory size
-4. Add command to unified CLI in `find_large/cli.py`
-5. Add entry point to `pyproject.toml`
-6. Test with various directories and file sizes
+5. Add CLI command in `audio/cli.py` for entry point invocation
+6. Add command to unified CLI in `find_large/cli.py`
+7. Add entry point to pyproject.toml
+8. Test with various directories and file sizes
 
 **Reference**: `videos/scanner.py:57` lines shows minimal scanner implementation
 
