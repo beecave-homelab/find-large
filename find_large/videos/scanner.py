@@ -3,6 +3,7 @@
 import logging
 import os
 
+from find_large.constants import MB_TO_BYTES
 from find_large.core import SizeScannerBase
 
 
@@ -75,7 +76,7 @@ class VideoScanner(SizeScannerBase):
                             if self.verbose:
                                 logging.debug(
                                     f"Found large video: {file_path} "
-                                    f"({size_bytes / self.MB_TO_BYTES:.2f} MB)"
+                                    f"({size_bytes / MB_TO_BYTES:.2f} MB)"
                                 )
                             self.items_list.append((file_path, size_bytes))
                             self.total_bytes += size_bytes
