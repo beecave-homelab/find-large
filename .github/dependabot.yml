@@ -4,23 +4,8 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
-updates:
-  # Python dependencies (PDM uses pyproject.toml + pdm.lock)
-  - package-ecosystem: "pip"
-    directory: "/"               # pyproject.toml and pdm.lock live here
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
-    open-pull-requests-limit: 10
-    versioning-strategy: increase
-    ignore:
-      - dependency-name: "python"
+updates: []
 
-  # Keep GitHub Actions up to date
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+# Renovate manages dependencies for this repository (see renovate.json and
+# .github/workflows/renovate.yml). Dependabot is intentionally disabled.
 
