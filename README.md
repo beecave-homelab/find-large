@@ -17,7 +17,7 @@ A command-line tool to search for and list large files in a directory. This util
 
 ## Badges
 
-![Python](https://img.shields.io/badge/python-3.6%2B-blue)
+![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![Version](https://img.shields.io/badge/version-0.2.1-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
