@@ -6,7 +6,7 @@ in a given directory, with options for different output formats and filtering.
 
 from find_large.cli import main as main
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "elvee"
 __description__ = (
     "A command-line utility to help you identify space-consuming files and directories"

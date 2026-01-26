@@ -2,10 +2,38 @@
 
 ## ToC
 
-- [v0.2.0](#v020-current---18-01-2026)
+- [v0.2.1](#v021-current---21-01-2026)
+- [v0.2.0](#v020---18-01-2026)
 - [v0.1.0](#v010---01-01-2026)
 
-## **v0.2.0** (Current) - *18-01-2026*
+## **v0.2.1** (Current) - *21-01-2026*
+
+### 🐛 **Bug Fix Release**
+
+### 🧪 **Testing Improvements in v0.2.1**
+
+- **Added**: Expanded end-to-end and unit test coverage for CLI workflows.
+- **Enhanced**: Added fixtures and return type checks to ensure consistent outputs.
+
+### 🐛 **Bug Fixes in v0.2.1**
+
+- **Fixed**: Updated video scanner to use consistent MB-to-bytes conversion.
+  - **Issue**: Video thresholds were computed with mismatched constants.
+  - **Root Cause**: The scanner used a legacy conversion value.
+  - **Solution**: Standardized on the MB_TO_BYTES constant.
+
+### 🔧 **Improvements in v0.2.1**
+
+- **Improved**: Added MB_TO_BYTES constant to the formatting utilities.
+- **Updated**: Maintenance updates for CodeQL schedule and workflow configuration.
+
+### 📝 **Key Commits in v0.2.1**
+
+`5af2038`, `54db851`, `d4e584c`, `9187b21`, `163e90f`
+
+______________________________________________________________________
+
+## **v0.2.0** - *18-01-2026*
 
 ### ✨ **Feature Release**
 
